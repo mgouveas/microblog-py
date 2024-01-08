@@ -1,4 +1,6 @@
 import pprint
+
+import bson.objectid
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import logging
@@ -45,7 +47,6 @@ def tweet():
         author = request_data['author']
         content = request_data['content']
         tweet_data = {
-            "id": random.randrange(0, 100, 1),
             "author": author,
             "content": content,
             "likes": 0,
@@ -60,13 +61,15 @@ def tweet():
 def like():
     request_data = request.get_json()
     tweet_id = request_data['id']
+    data_likes = posts.find_one({"_id": bson.objectid.ObjectId(request_data['id'])}, {"likes"})
+    n_likes = data_likes["likes"]
     tweet_like = posts.update_one(
-        {"id": request_data['id']},
-        {"$set": {"likes": ++1}}
+        {"_id": bson.objectid.ObjectId(request_data['id'])},
+        {"$set": {"likes": n_likes+1}}
     )
     return jsonify()
 
 
 if __name__ == '__main__':
     logging.info("Server on!")
-    app.run()
+    app.run(debug=True)
