@@ -1,12 +1,11 @@
 import pprint
-import pymongo
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import logging
 import routes
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify
 import datetime
-from bson.objectid import ObjectId
+import random
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,27 +37,33 @@ app = Flask(__name__)
 def tweet():
     if request.method == 'GET':
         for post in posts.find():
-            pprint.pprint(post)
+            #pprint.pprint(post)
+            return jsonify(pprint.pprint(post))
         return jsonify()
     elif request.method == 'POST':
         request_data = request.get_json()
         author = request_data['author']
         content = request_data['content']
         tweet_data = {
+            "id": random.randrange(0, 100, 1),
             "author": author,
             "content": content,
             "likes": 0,
             "createdAt": datetime.datetime.now()
         }
-        new_tweet = posts.insert_one(tweet_data).inserted_id
-        return jsonify()
+        new_tweet = posts.insert_one(tweet_data)
+        return jsonify(pprint.pprint(tweet_data))
 
 
 # Dar like
-@app.route("/likes/:id", methods=['POST'])
+@app.route("/likes", methods=['POST'])
 def like():
-    params = request.get_data()
-    pprint.pprint(params)
+    request_data = request.get_json()
+    tweet_id = request_data['id']
+    tweet_like = posts.update_one(
+        {"id": request_data['id']},
+        {"$set": {"likes": ++1}}
+    )
     return jsonify()
 
 
