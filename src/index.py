@@ -1,13 +1,12 @@
 import pprint
-
+import os
+import dotenv
 import bson.objectid
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import logging
-import routes
 from flask import Flask, request, jsonify
 import datetime
-import random
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,7 +14,9 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S"
 )
 
-uri = "mongodb+srv://mgs:908621@twitter.jmvtvue.mongodb.net/?retryWrites=true&w=majority"
+dotenv.load_dotenv()
+
+uri = f"mongodb+srv://mgs:{os.getenv("DB_PASSWORD")}@twitter.jmvtvue.mongodb.net/?retryWrites=true&w=majority"
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
