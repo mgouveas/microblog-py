@@ -39,7 +39,6 @@ app = Flask(__name__)
 def tweet():
     if request.method == 'GET':
         for post in posts.find():
-            #pprint.pprint(post)
             return jsonify(pprint.pprint(post))
         return jsonify()
     elif request.method == 'POST':
@@ -72,4 +71,4 @@ def like():
 
 if __name__ == '__main__':
     logging.info("Server on!")
-    app.run(debug=True)
+    app.run()
